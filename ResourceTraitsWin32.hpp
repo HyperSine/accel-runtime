@@ -148,5 +148,23 @@ namespace ARL::ResourceTraits {
         }
     };
 
+    struct RegistryKey {
+        using HandleType = HKEY;
+
+        static inline const HandleType InvalidValue = NULL;
+
+        [[nodiscard]]
+        static bool IsValid(const HandleType& Handle) noexcept {
+            return Handle != InvalidValue;
+        }
+
+        static void Release(const HandleType& Handle) {
+            if (RegCloseKey(Handle) != ERROR_SUCCESS) {
+                auto err = GetLastError();
+                throw std::system_error(err, std::system_category());
+            }
+        }
+    };
+
 }
 
